@@ -45,6 +45,7 @@ def visualize_graph(G, with_world_map = True):
 
 # Federico: Custom change. Using an Ubuntu pc.
 os.environ['PROJ_LIB'] = "/home/fico/anaconda3/share/proj/"
+
 import mpl_toolkits.basemap as bm
 
 # get list of files with trade info from country_files_detailed_summary folder
@@ -56,6 +57,7 @@ G = nx.DiGraph()
 
 # create countries lists
 relevant_countries = ['Argentina', 'Belgium', 'Brazil', 'Chile', 'Colombia', 'Czech Republic', 'France', 'Netherlands', 'Peru', 'Spain', 'United Kingdom', 'United States']
+relevant_countries = ['ARG', 'BEL', 'BRA', 'CHI', 'COL', 'CZR', 'FRA', 'NET', 'PER', 'SPA', 'UK', 'US']
 
 # countries values follow the same order as relevant_countries list
 covid_cases = [1.24e6, 494e3, 5.65e6, 522e3, 1.14e6, 411e3, 1.79e6, 410e3, 918e3, 1.33e6, 1.19e6, 10e6]

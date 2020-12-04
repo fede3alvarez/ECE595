@@ -41,7 +41,10 @@ def visualize_graph(G, with_world_map = True):
 
 
 # this line solves bug related to PROJ_LIB
-os.environ['PROJ_LIB'] = "C:\\ProgramData\\Anaconda3\\Library\\share"
+#os.environ['PROJ_LIB'] = "C:\\ProgramData\\Anaconda3\\Library\\share"
+
+# Federico: Custom change. Using an Ubuntu pc.
+os.environ['PROJ_LIB'] = "/home/fico/anaconda3/share/proj/"
 import mpl_toolkits.basemap as bm
 
 # get list of files with trade info from country_files_detailed_summary folder
@@ -67,7 +70,7 @@ G.add_nodes_from(relevant_countries)
 
 
 for i in range(len(country_files)): # for each file    
-    with open(country_files[i]) as file: # open file
+    with open(country_files[i], encoding="utf-8") as file: # open file
         
         reader = csv.reader(file, delimiter=',')
         headers = next(reader, None) # ignore headers
