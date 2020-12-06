@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 '''
 This is a short script to clean up the downloaded data and normalized exports
@@ -20,6 +21,11 @@ for country in countries:
 
     # Update Column 'Norm_Exports' =  'TradeValue in 1000 USD' / total
     data.loc[data['ReporterISO3'] == country,'Norm_Exports'] = data.loc[data['ReporterISO3'] == country,'TradeValue in 1000 USD']  / total
-    
-# Create a
+
+# Remove export to 'Unspecified'
+# Otherwise 'Unspecified' may display as a friendly new World Power
+data.drop(data[data['PartnerName'] == 'Unspecified' ].index , inplace=True)
+#data = countries[countries != country]
+
+# Save output to csv file
 data.to_csv(output_file + '.csv')
