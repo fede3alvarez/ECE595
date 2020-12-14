@@ -6,43 +6,65 @@ import itertools as iter
 This is a short script use the clean up data and create
 '''
 
-filename         = 'Export_2019_cleanup'                                            # File to clean up, assumed to be csv format
+filename         = 'centrality_data'                                                # File to clean up, assumed to be csv format
 data             = pd.read_csv(filename + '.csv')                                   # Read CSV file into DataFrame df
-output_file      = 'friendliness_norm_export_product'                               # Define output file
+output_file      = 'friendly_centrality'                                            # Define output file
 
-countries        = data['ReporterISO3'].unique()                                    # Get list of countries
-friends_database = pd.DataFrame(columns=['Friend A', 'Friend B', 'Friendliness'])   # Initialize Results Dataframe 
+countries        = data['Country'].unique()                                         # Get list of countries
+friends_database = pd.DataFrame(columns=['Friend 0', 
+                                         'Friend 1', 
+                                         'Closeness Friend 0', 
+                                         'Betweeness Friend 0', 
+                                         'Eigenvector Friend 0', 
+                                         'Closeness Friend 1', 
+                                         'Betweeness Friend 1', 
+                                         'Eigenvector Friend 1', 
+                                         '% Diff Closeness', 
+                                         '% Diff Betweeness', 
+                                         '% Diff Eigenvector'])   # Initialize Results Dataframe 
 
 combinations     = list(iter.combinations(countries, 2))                            # Get all combinations of two countries
 
 # For every friend combination
 for friends in combinations:
 
-    # Check if there is export data from friend_0 exports to friend_1 
-    try:
-        friend_0 = data[(data['ReporterISO3'] == friends[0]) & (data['PartnerISO3'] == friends[1])]['Norm_Exports'].values[0]  
-    # Else, set it to 1 (ie, other friend decides)
-    except:
-        friend_0 = 1
+    # Get Data from Friend 0
+    Closeness_friend_0   = data[data['Country'] == friends[0]]['Closeness'].values[0]  
+    Betweeness_friend_0  = data[data['Country'] == friends[0]]['Betweeness'].values[0]  
+    Eigenvector_friend_0 = data[data['Country'] == friends[0]]['Eigenvector'].values[0]  
 
-    # Check if there is export data from friend_1 exports to friend_0 
-    try:
-        friend_1 = data[(data['ReporterISO3'] == friends[1]) & (data['PartnerISO3'] == friends[0])]['Norm_Exports'].values[0]  
-    # Else, set it to 1 (ie, other friend decides)
-    except:
-        friend_1 = 1
-    
+    # Get Data from Friend 1
+    Closeness_friend_1   = data[data['Country'] == friends[1]]['Closeness'].values[0]  
+    Betweeness_friend_1  = data[data['Country'] == friends[1]]['Betweeness'].values[0]  
+    Eigenvector_friend_1 = data[data['Country'] == friends[1]]['Eigenvector'].values[0]  
+
+    # Find differences
+    diff_Closeness_0 = abs(Closeness_friend_0 - Closeness_friend_1) / Closeness_friend_0 * 100
+    diff_Closeness_1 = abs(Closeness_friend_1 - Closeness_friend_0) / Closeness_friend_1 * 100
+    diff_Closeness = min(diff_Closeness_0, diff_Closeness_1)
+
+    diff_Betweeness_0 = abs(Betweeness_friend_0 - Betweeness_friend_1) / Betweeness_friend_0 * 100
+    diff_Betweeness_1 = abs(Betweeness_friend_1 - Betweeness_friend_0) / Betweeness_friend_1 * 100
+    diff_Betweeness = min(diff_Betweeness_0, diff_Betweeness_1)
+
+    diff_Eigenvector_0 = abs(Eigenvector_friend_0 - Eigenvector_friend_1) / Eigenvector_friend_0 * 100
+    diff_Eigenvector_1 = abs(Eigenvector_friend_1 - Eigenvector_friend_0) / Eigenvector_friend_1 * 100
+    diff_Eigenvector = min(diff_Eigenvector_0, diff_Eigenvector_1)
+
     # Calculate friendliness by Multiply them
-    friendliness = friend_0 * friend_1
     
-    # If friendliness is 1, then there was no data
-    if (friendliness == 1):
-        continue
-
     # If friendship is real, record data
     friendship_entry = {'Friend 0': friends[0],
                         'Friend 1': friends[1], 
-                        'Friendliness': friendliness}
+                        'Closeness Friend 0': Closeness_friend_0, 
+                        'Betweeness Friend 0': Betweeness_friend_0, 
+                        'Eigenvector Friend 0': Eigenvector_friend_0, 
+                        'Closeness Friend 1': Closeness_friend_1, 
+                        'Betweeness Friend 1': Betweeness_friend_1, 
+                        'Eigenvector Friend 1': Eigenvector_friend_1, 
+                        '% Diff Closeness': diff_Closeness, 
+                        '% Diff Betweeness': diff_Betweeness, 
+                        '% Diff Eigenvector': diff_Eigenvector}
 
     friends_database = friends_database.append(friendship_entry, ignore_index=True)
 
